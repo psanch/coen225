@@ -1,0 +1,8 @@
+user@psanch:~/Documents/lab1$ gcc -o hello hello.c
+user@psanch:~/Documents/lab1$ ./hello
+Hello World
+user@psanch:~/Documents/lab1$ ./hello pedro
+Hello pedro
+user@psanch:~/Documents/lab1$ ./hello pedro qdow
+Goodbye World
+user@psanch:~/Documents/lab1$
