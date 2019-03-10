@@ -1,4 +1,4 @@
-/* lab6.c */
+f/* lab6.c */
 /* Warning: This program contains a security vulnerability. For academic use only. */
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
   /* Generate a random secret value and set it for secrets[0]
    * Your objective will be to set secrets[1] to the secret value also
    */
+  
   time_t t;
   srand((unsigned) time(&t));
   SECRETVALUE = (rand() % 26) + 65;
